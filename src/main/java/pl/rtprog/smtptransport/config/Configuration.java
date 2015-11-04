@@ -15,6 +15,10 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 @XStreamAlias("configuration")
 public class Configuration {
 	
+	/** Number of background senders. 0 means send while receiving (blocks) */
+	@XStreamAlias("backgroundSenders")
+	private Integer backgroundThreads;
+	
 	/** Listening port */
 	@XStreamAlias("port")
 	private Integer listenPort;
@@ -42,6 +46,15 @@ public class Configuration {
 	/** Connection timeout in seconds */
 	@XStreamAlias("smtpConnectionTimeout")
 	private Integer connectionTimeout;
+	
+	/** From email */
+	@XStreamAlias("overrideFrom")
+	private String fromEmail;
+	
+	/** From name */
+	@XStreamAlias("overrideFromName")
+	private String fromName;
+	
 	
 	public Integer getListenPort() {
 		if(listenPort!=null) return listenPort;
@@ -72,6 +85,14 @@ public class Configuration {
 	
 	public String getUsername() { return username; }
 	public String getPassword() { return password; }
+
+	public String getFromEmail() { return fromEmail; }
+	public String getFromName() { return fromName; }
+	
+	public Integer getBackgroundThreads() { 
+		if(backgroundThreads!=null) return backgroundThreads;
+		return 0;	// default - not run in background
+	}
 	
 	private static XStream getXStream() {
 		XStream xs=new XStream(new DomDriver());

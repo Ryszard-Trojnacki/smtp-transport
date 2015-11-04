@@ -24,6 +24,7 @@ import org.subethamail.smtp.TooMuchDataException;
 
 import pl.rtprog.smtptransport.config.Configuration;
 import pl.rtprog.smtptransport.services.ConfigurationService;
+import pl.rtprog.smtptransport.services.JobService;
 
 /**
  * Implementation of {@link MessageHandler} with Tapestry support.
@@ -37,13 +38,15 @@ public class MessageHandlerImpl implements MessageHandler {
 	private PerthreadManager tm;
 	@Inject
 	private ConfigurationService cs;
+	@Inject
+	private JobService js;
 	
-	private MessageContext ctx;
+//	private MessageContext ctx;
 	
 	private Email email;
 
 	public void init(MessageContext ctx) {
-		this.ctx=ctx;
+//		this.ctx=ctx;
 		this.email=new SimpleEmail();
 		log.debug("Starting processing new message from: {}",ctx.getRemoteAddress());
 	}
@@ -64,13 +67,13 @@ public class MessageHandlerImpl implements MessageHandler {
 		Configuration cfg=cs.getConfiguration();
 
 		int port=cfg.getPort();
-		email.setDebug(true);
+		email.setDebug(false);	// TODO: Parameter for testing purposes
 		email.setHostName(cfg.getServer());
 		email.setAuthenticator(new DefaultAuthenticator(cfg.getUsername(), cfg.getPassword()));
 		email.setSmtpPort(port);
 		email.setSslSmtpPort(String.valueOf(port));
 		email.setSSLCheckServerIdentity(false);
-		email.setSocketConnectionTimeout(cfg.getConnectionTimeout());
+		email.setSocketConnectionTimeout(cfg.getConnectionTimeout()*1000);
 		switch(cfg.getMode()) {
 		case NORMAL:
 			break;
@@ -86,6 +89,7 @@ public class MessageHandlerImpl implements MessageHandler {
 		MimeMessage m;
 		try {
 			m=new MimeMessage(email.getMailSession(), data);
+			log.debug("Parsed incomming message ({} bytes) from: {}, to: {}",m.getSize(), m.getFrom(), m.getAllRecipients());
 		} catch (MessagingException | EmailException e) {
 			log.warn("Error while reading incoming message with exception",e);
 			throw new IOException("Error reading message with error: "+e.getMessage());
@@ -113,11 +117,20 @@ public class MessageHandlerImpl implements MessageHandler {
 					else email.addBcc(ia.getAddress());
 				}
 			}
-			InternetAddress from=(InternetAddress)m.getFrom()[0];
-			if(from.getPersonal()!=null) {
-				email.setFrom(from.getAddress(), from.getPersonal());
+			if(cfg.getFromEmail()!=null) {
+				log.debug("Overriding from address");
+				if(cfg.getFromName()!=null) {
+					email.setFrom(cfg.getFromEmail(), cfg.getFromName());
+				} else {
+					email.setFrom(cfg.getFromEmail());
+				}
 			} else {
-				email.setFrom(from.getAddress());
+				InternetAddress from=(InternetAddress)m.getFrom()[0];
+				if(from.getPersonal()!=null) {
+					email.setFrom(from.getAddress(), from.getPersonal());
+				} else {
+					email.setFrom(from.getAddress());
+				}
 			}
 			email.setSubject(m.getSubject());
 			email.setContent(m.getContent(), m.getContentType());
@@ -128,7 +141,25 @@ public class MessageHandlerImpl implements MessageHandler {
 		}
 		
 		try {
-			email.send();
+			if(js.isBackgroundMode()) {
+				log.debug("Sending message in background mode");
+				js.run(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							log.debug("Background mode sending started");
+							email.send();
+							log.info("Email send");
+						} catch (EmailException e) {
+							log.error("Error while sending email",e);
+						}
+					}
+				});
+			} else {
+				log.debug("Sending message in foreground (blocking mode)");
+				email.send();
+				log.info("Email send");
+			}
 		} catch (EmailException e) {
 			log.error("Error while sending email",e);
 			throw new IOException("Error while transferting message to target host with message: "+e.getMessage());

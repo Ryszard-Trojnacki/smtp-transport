@@ -8,6 +8,7 @@ public class SMTPTransportModule {
     public static void bind(ServiceBinder binder) {
     	binder.bind(MessageHandlerFactory.class, MessageHandlerFactoryImpl.class);
     	binder.bind(ConfigurationService.class);
+    	binder.bind(JobService.class);
     }
     
 	public static void contributeFactoryDefaults(MappedConfiguration<String, String> configuration) {
