@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
+	<!-- handlers = org.slf4j.bridge.SLF4JBridgeHandler -->
+
+	<appender name="file" class="org.apache.log4j.rolling.RollingFileAppender">
+		<!-- The active file to log to -->
+		<param name="append" value="true" />
+		<param name="encoding" value="UTF-8" />
+		<!-- <param name="maxBackupIndex" value="30" /> -->
+
+		<rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+			<param name="FileNamePattern" value="logs/smtp-transport.%d{yyyy-MM-dd}.log.gz" />
+		</rollingPolicy>
+
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d (%X{context}) [%5p] %c | %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="async" class="org.apache.log4j.AsyncAppender">
+		<param name="BufferSize" value="500" />
+		<appender-ref ref="file" />
+	</appender>
+
+	<logger name="org.apache.tapestry5"><level value="INFO" /></logger>
+	<logger name="org.apache.tapestry5.test.PageTester"><level value="WARN" /></logger>
+	<logger name="org.apache.tapestry5.ioc.RegistryBuilder"><level value="WARN" /></logger>
+	<logger name="org.apache.tapestry5.services.TapestryModule.ComponentClassResolver"><level value="WARN" /></logger>
+	<logger name="org.apache.tapestry5.TapestryFilter"><level value="WARN" /></logger>
+
+	<logger name="pl.rtprog.smtptransport"><level value="DEBUG" /></logger>
+
+	<root>
+		<level value="info" />
+		<appender-ref ref="async" />
+	</root>
+</log4j:configuration>
+

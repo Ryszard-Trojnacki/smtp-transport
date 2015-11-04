@@ -1,0 +1,5 @@
+<configuration>
+	<smtpHost>host1</smtpHost>
+	<smtpPort>25</smtpPort>
+	<smtpEncryption>SSL</smtpEncryption>
+</configuration>
