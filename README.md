@@ -26,3 +26,16 @@ Used for transferring SMTP data from old/limited mail senders (for example Ricoh
 * **overrideFromName** - from name e-mail address to set for outgoing messages; optional, default from name from received message
 * **backgroundSenders** - count of background workers; optional, default 0 - works in foreground
 
+## Build & run
+To build application just get a copy from GIT.
+Install Java JDK 8 and Maven and run
+```bash
+mvn package
+```
+in **target** directory there will be:
+* **smtp-transport.jar** - main jar with code
+* **libs/** - folder with dependencies
+copy this to runtime directory. Create configuration **smtp-transport.xml** and start application with Java JRE 8:
+```bash
+cd path_to_app && java -jar smtp-transport.jar &
+```
