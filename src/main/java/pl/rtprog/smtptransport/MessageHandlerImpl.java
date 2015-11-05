@@ -74,6 +74,7 @@ public class MessageHandlerImpl implements MessageHandler {
 		email.setSslSmtpPort(String.valueOf(port));
 		email.setSSLCheckServerIdentity(false);
 		email.setSocketConnectionTimeout(cfg.getConnectionTimeout()*1000);
+		email.setSocketTimeout(cfg.getSendTimeout()*1000);
 		switch(cfg.getMode()) {
 		case NORMAL:
 			break;

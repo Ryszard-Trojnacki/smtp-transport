@@ -55,6 +55,10 @@ public class Configuration {
 	@XStreamAlias("overrideFromName")
 	private String fromName;
 	
+	/** Send Connection Timeout */
+	@XStreamAlias("smtpTimeout")
+	private Integer sendTimeout;
+	
 	
 	public Integer getListenPort() {
 		if(listenPort!=null) return listenPort;
@@ -64,6 +68,11 @@ public class Configuration {
 	public Integer getConnectionTimeout() {
 		if(connectionTimeout!=null) return connectionTimeout;
 		return 15;
+	}
+	
+	public Integer getSendTimeout() {
+		if(sendTimeout!=null) return sendTimeout;
+		return 180;	// default 3 minutes
 	}
 	
 	public String getServer() { return server; }
@@ -107,5 +116,5 @@ public class Configuration {
 	public static Configuration load(InputStream is) {
 		return (Configuration)getXStream().fromXML(is);
 	}
-
+	
 }
