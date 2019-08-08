@@ -3,6 +3,7 @@ package pl.rtprog.smtptransport;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.inject.Inject;
 import javax.mail.Address;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
@@ -13,8 +14,6 @@ import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
-import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.subethamail.smtp.MessageContext;
@@ -34,8 +33,6 @@ import pl.rtprog.smtptransport.services.JobService;
 public class MessageHandlerImpl implements MessageHandler {
 	private final static Logger log=LoggerFactory.getLogger(MessageHandlerImpl.class);
 	
-	@Inject
-	private PerthreadManager tm;
 	@Inject
 	private ConfigurationService cs;
 	@Inject
@@ -169,6 +166,6 @@ public class MessageHandlerImpl implements MessageHandler {
 
 	@Override
 	public void done() {
-		tm.cleanup();
+
 	}
 }

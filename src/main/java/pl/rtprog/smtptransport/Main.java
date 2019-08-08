@@ -1,12 +1,10 @@
 package pl.rtprog.smtptransport;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.log4j.AsyncAppender;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.PatternLayout;
-import org.apache.tapestry5.ioc.Registry;
-import org.apache.tapestry5.ioc.RegistryBuilder;
-import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.ioc.annotations.PostInjection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -16,6 +14,8 @@ import org.subethamail.smtp.server.SMTPServer;
 import pl.rtprog.smtptransport.config.Configuration;
 import pl.rtprog.smtptransport.services.ConfigurationService;
 import pl.rtprog.smtptransport.services.SMTPTransportModule;
+
+import javax.inject.Inject;
 
 /**
  * Startup class.
@@ -33,7 +33,7 @@ public class Main implements Runnable {
 	@Inject
 	private ConfigurationService cs;
 	
-	@PostInjection
+	@Inject
 	public void init() {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
@@ -70,7 +70,6 @@ public class Main implements Runnable {
 	}
 	
 	public static void main(String[] args) {
-		System.setProperty("tapestry.service-reloading-enabled","false");
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
 			@Override
 			public void uncaughtException(Thread t, Throwable e) {
@@ -87,18 +86,16 @@ public class Main implements Runnable {
 		}
 		SLF4JBridgeHandler.install();
 
-		// build registry
-		RegistryBuilder rb=new RegistryBuilder();
-		rb.add(SMTPTransportModule.class);
-		Registry reg=rb.build();
+		// build Guice
+		Injector injector=Guice.createInjector(new SMTPTransportModule());
 		try {
 			// create main class
-			Main m=reg.autobuild(Main.class);
+			Main m=injector.getInstance(Main.class);
 			m.run();	// and start worker
 		}catch(Throwable e) {
 			log.error("Unexpected exception",e);
 		}finally {
-			reg.shutdown();
+
 		}
 	}
 }

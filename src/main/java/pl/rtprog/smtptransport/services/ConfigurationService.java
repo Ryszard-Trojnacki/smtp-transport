@@ -17,20 +17,24 @@ public class ConfigurationService {
 	
 	private final Object lock=new Object();
 	
-	private long modifiTime=0;
+	private long modifyTime =0;
 	private Configuration last=null;
 	
 	public Configuration getConfiguration() {
 		File conf=new File("smtp-transport.xml");
+		if(!conf.exists()) {
+			log.error("Missing configuration file '{}'!", conf.getName());
+			throw new IllegalStateException("Missing configuration file");
+		}
 		synchronized(lock) {
 			if(last==null) {
 				log.debug("Loading configuration from file: {}",conf.getAbsolutePath());
 				last=Configuration.load(conf);
-				modifiTime=conf.lastModified();
-			} else if(conf.lastModified()!=modifiTime) {
+				modifyTime =conf.lastModified();
+			} else if(conf.lastModified()!= modifyTime) {
 				log.debug("Reloading configuration from file: {}",conf.getAbsolutePath());
 				last=Configuration.load(conf);	// reloading
-				modifiTime=conf.lastModified();
+				modifyTime =conf.lastModified();
 			}
 			return last; 
 		}

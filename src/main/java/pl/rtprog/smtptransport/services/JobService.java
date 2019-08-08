@@ -1,10 +1,8 @@
 package pl.rtprog.smtptransport.services;
 
+import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
-
-import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.ioc.services.PerthreadManager;
 
 /**
  * Job processing (sending) service.<br/>
@@ -39,21 +37,16 @@ public class JobService {
 					processQueue();
 				}
 			}finally {
-				tm.cleanup();
 			}
 		}
 	}
 	
 	@Inject
 	private ConfigurationService cs;
-	@Inject
-	private PerthreadManager tm;
-	
+
 	/** Object for synchronization */
 	private final Object lock=new Object();
-	
-	
-	
+
 	/** Queued jobs */
 	private LinkedList<JobThread> jobs=new LinkedList<>();
 	
@@ -80,7 +73,6 @@ public class JobService {
 	 * Runs job in foreground (if configured no background senders) and then throws {@link InvocationTargetException} when error
 	 * or in background, when background senders is more than 0.
 	 * @param job job to execute
-	 * @param resultHandler callback for result or error processing (needed if background mode)
 	 * @throws InvocationTargetException if error when working in foreground mode
 	 */
 	public void run(Runnable job) {
