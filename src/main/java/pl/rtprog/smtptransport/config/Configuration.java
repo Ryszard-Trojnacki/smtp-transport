@@ -6,6 +6,7 @@ import java.io.InputStream;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.thoughtworks.xstream.security.NoTypePermission;
 
 /**
  * Root class of configuration structure (XML).
@@ -106,6 +107,9 @@ public class Configuration {
 	private static XStream getXStream() {
 		XStream xs=new XStream(new DomDriver());
 		xs.processAnnotations(Configuration.class);
+		xs.addPermission(NoTypePermission.NONE);
+		xs.allowTypes(new Class[] { Configuration.class} );
+
 		return xs;
 	}
 	

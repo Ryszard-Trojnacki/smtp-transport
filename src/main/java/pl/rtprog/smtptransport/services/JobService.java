@@ -73,7 +73,6 @@ public class JobService {
 	 * Runs job in foreground (if configured no background senders) and then throws {@link InvocationTargetException} when error
 	 * or in background, when background senders is more than 0.
 	 * @param job job to execute
-	 * @throws InvocationTargetException if error when working in foreground mode
 	 */
 	public void run(Runnable job) {
 		int bg=cs.getConfiguration().getBackgroundThreads();

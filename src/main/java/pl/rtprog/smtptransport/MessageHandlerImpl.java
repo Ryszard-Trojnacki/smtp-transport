@@ -87,7 +87,7 @@ public class MessageHandlerImpl implements MessageHandler {
 		MimeMessage m;
 		try {
 			m=new MimeMessage(email.getMailSession(), data);
-			log.debug("Parsed incomming message ({} bytes) from: {}, to: {}",m.getSize(), m.getFrom(), m.getAllRecipients());
+			log.debug("Parsed incoming message ({} bytes) from: {}, to: {}",m.getSize(), m.getFrom(), m.getAllRecipients());
 		} catch (MessagingException | EmailException e) {
 			log.warn("Error while reading incoming message with exception",e);
 			throw new IOException("Error reading message with error: "+e.getMessage());
@@ -134,7 +134,7 @@ public class MessageHandlerImpl implements MessageHandler {
 			email.setContent(m.getContent(), m.getContentType());
 			email.setCharset("UTF-8");
 		}catch(MessagingException | EmailException e) {
-			log.warn("Error while settingup email from received message",e);
+			log.warn("Error while setting up email from received message",e);
 			throw new IOException("Error processing message with error: "+e.getMessage());
 		}
 		
@@ -146,8 +146,8 @@ public class MessageHandlerImpl implements MessageHandler {
 					public void run() {
 						try {
 							log.debug("Background mode sending started");
-							email.send();
-							log.info("Email send");
+							String msgId=email.send();
+							log.info("Email send with id: {}", msgId);
 						} catch (EmailException e) {
 							log.error("Error while sending email",e);
 						}
