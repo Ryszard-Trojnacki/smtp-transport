@@ -15,6 +15,7 @@ import pl.rtprog.smtptransport.config.Configuration;
 import pl.rtprog.smtptransport.core.CoreModule;
 import pl.rtprog.smtptransport.delivery.DeliveryModule;
 import pl.rtprog.smtptransport.core.ConfigurationService;
+import pl.rtprog.smtptransport.logic.LogicService;
 import pl.rtprog.smtptransport.logic.SMTPTransportModule;
 
 import javax.inject.Inject;
@@ -34,6 +35,8 @@ public class Main implements Runnable {
 	
 	@Inject
 	private ConfigurationService cs;
+	@Inject
+	private LogicService logic;
 	
 	@Inject
 	public void init() {
@@ -62,11 +65,12 @@ public class Main implements Runnable {
 		while(server.isRunning()) {
 			synchronized(this) {
 				try {
-					wait(5);
+					wait(1000);
 				} catch (InterruptedException e) {
 					log.warn("Unexpected interrupt exception.",e);
 					break;
 				}
+				logic.processPending();
 			}
 		}
 	}

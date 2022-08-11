@@ -22,3 +22,4 @@ hs_err_pid*
 /smtp-transport.xml
 /logs/
 /.idea/
+/data/

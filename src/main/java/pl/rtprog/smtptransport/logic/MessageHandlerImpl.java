@@ -6,6 +6,7 @@ import org.subethamail.smtp.MessageContext;
 import org.subethamail.smtp.MessageHandler;
 import org.subethamail.smtp.RejectException;
 
+import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
@@ -19,6 +20,9 @@ import java.io.InputStream;
  */
 public class MessageHandlerImpl implements MessageHandler {
 	private final static Logger log=LoggerFactory.getLogger(MessageHandlerImpl.class);
+
+	@Inject
+	private LogicService logic;
 	
 	public void init(MessageContext ctx) {
 		log.debug("Starting processing new message from: {}",ctx.getRemoteAddress());
@@ -40,11 +44,15 @@ public class MessageHandlerImpl implements MessageHandler {
 		MimeMessage m;
 		try {
 			m=new MimeMessage(null, data);
-			log.debug("Parsed incoming message ({} bytes) from: {}, to: {}",m.getSize(), m.getFrom(), m.getAllRecipients());
+			log.debug("Parsed incoming message ({} bytes) from: {}, sender: {}, to: {}, title: {}",
+					m.getSize(),
+					m.getFrom(), m.getSender(), m.getAllRecipients(),
+					m.getSubject());
 		} catch (MessagingException e) {
 			log.warn("Error while reading incoming message with exception",e);
 			throw new IOException("Error reading message with error: "+e.getMessage());
 		}
+		logic.registerInput(m);
 	}
 
 	@Override
