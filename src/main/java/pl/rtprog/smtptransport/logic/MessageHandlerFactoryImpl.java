@@ -1,10 +1,9 @@
-package pl.rtprog.smtptransport.services;
+package pl.rtprog.smtptransport.logic;
 
 import com.google.inject.Injector;
 import org.subethamail.smtp.MessageContext;
 import org.subethamail.smtp.MessageHandler;
 import org.subethamail.smtp.MessageHandlerFactory;
-import pl.rtprog.smtptransport.MessageHandlerImpl;
 
 import javax.inject.Inject;
 

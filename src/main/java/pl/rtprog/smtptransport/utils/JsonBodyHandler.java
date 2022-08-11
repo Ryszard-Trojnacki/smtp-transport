@@ -1,4 +1,4 @@
-package pl.rtprog.smtptransport.json;
+package pl.rtprog.smtptransport.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

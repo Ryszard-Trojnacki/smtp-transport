@@ -1,4 +1,4 @@
-package pl.rtprog.smtptransport.services;
+package pl.rtprog.smtptransport.core;
 
 import java.io.File;
 

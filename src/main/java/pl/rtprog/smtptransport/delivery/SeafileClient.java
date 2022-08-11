@@ -1,10 +1,9 @@
-package pl.rtprog.smtptransport.services;
+package pl.rtprog.smtptransport.delivery;
 
-import com.google.common.net.UrlEscapers;
-import pl.rtprog.smtptransport.json.JsonBodyHandler;
-import pl.rtprog.smtptransport.seafile.AuthResponse;
-import pl.rtprog.smtptransport.seafile.DefaultRepo;
-import pl.rtprog.smtptransport.seafile.DirectoryDetail;
+import pl.rtprog.smtptransport.utils.JsonBodyHandler;
+import pl.rtprog.smtptransport.delivery.seafile.AuthResponse;
+import pl.rtprog.smtptransport.delivery.seafile.DefaultRepo;
+import pl.rtprog.smtptransport.delivery.seafile.DirectoryDetail;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,14 +14,13 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
-import java.util.Formatter;
 
 /**
  * Service for supporting transport to Seafile.
  *
  * @author Ryszard Trojnacki
  */
-public class SeafileService {
+class SeafileClient {
     private final static String HEADER_AUTH="Authorization";
     private final static String HEADER_ACCEPT="Accept";
     private final static String ACCEPT_VALUE="application/json";

@@ -12,8 +12,10 @@ import org.subethamail.smtp.MessageHandlerFactory;
 import org.subethamail.smtp.server.SMTPServer;
 
 import pl.rtprog.smtptransport.config.Configuration;
-import pl.rtprog.smtptransport.services.ConfigurationService;
-import pl.rtprog.smtptransport.services.SMTPTransportModule;
+import pl.rtprog.smtptransport.core.CoreModule;
+import pl.rtprog.smtptransport.delivery.DeliveryModule;
+import pl.rtprog.smtptransport.core.ConfigurationService;
+import pl.rtprog.smtptransport.logic.SMTPTransportModule;
 
 import javax.inject.Inject;
 
@@ -87,7 +89,11 @@ public class Main implements Runnable {
 		SLF4JBridgeHandler.install();
 
 		// build Guice
-		Injector injector=Guice.createInjector(new SMTPTransportModule());
+		Injector injector=Guice.createInjector(
+				new CoreModule(),
+				new DeliveryModule(),
+				new SMTPTransportModule()
+		);
 		try {
 			// create main class
 			Main m=injector.getInstance(Main.class);

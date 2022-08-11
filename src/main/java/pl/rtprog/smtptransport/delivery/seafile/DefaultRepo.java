@@ -1,4 +1,4 @@
-package pl.rtprog.smtptransport.seafile;
+package pl.rtprog.smtptransport.delivery.seafile;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
