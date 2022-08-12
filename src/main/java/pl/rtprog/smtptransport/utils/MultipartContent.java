@@ -23,6 +23,19 @@ public class MultipartContent implements Iterable<byte[]> {
     private final static byte[] boundarySep=("--"+boundary+"\r\nContent-Disposition: form-data; name=").getBytes(StandardCharsets.UTF_8);
     private final static byte[] line="\r\n".getBytes(StandardCharsets.UTF_8);
 
+    /**
+     * Helper class for providing file to content but with custom name.
+     */
+    public static class FileInfo {
+        public final Path file;
+        public final String name;
+
+        public FileInfo(Path file, String name) {
+            this.file = file;
+            this.name = name;
+        }
+    }
+
     private final List<Pair<String, Object>> data;
 
     public MultipartContent(Map<String, Object> data) {
@@ -52,8 +65,11 @@ public class MultipartContent implements Iterable<byte[]> {
                     case 0: return boundarySep;
                     case 1:
                         if(elem.getValue() instanceof Path) {
-                            return ('"'+elem.getKey()+"\"; filename=\""+((Path)elem.getValue()).getFileName()
-                                    +"\"\r\nContent-Type: application/pdf\r\n\r\n").getBytes(StandardCharsets.UTF_8);
+                            return ('"' + elem.getKey() + "\"; filename=\"" + ((Path) elem.getValue()).getFileName()
+                                    + "\"\r\nContent-Type: application/pdf\r\n\r\n").getBytes(StandardCharsets.UTF_8);
+                        } else if(elem.getValue() instanceof FileInfo) {
+                            var fi=(FileInfo)elem.getValue();
+                            return ('"' + elem.getKey() + "\"; filename=\"" + fi.name + "\"\r\nContent-Type: application/pdf\r\n\r\n").getBytes(StandardCharsets.UTF_8);
                         } else {
                             return ('"' + elem.getKey() + "\"\r\n\r\n").getBytes(StandardCharsets.UTF_8);
                         }
@@ -61,6 +77,12 @@ public class MultipartContent implements Iterable<byte[]> {
                         if(elem.getValue() instanceof Path) {
                             try {
                                 return Files.readAllBytes((Path) elem.getValue());
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        } else if(elem.getValue() instanceof FileInfo) {
+                            try {
+                                return Files.readAllBytes( ((FileInfo)elem.getValue()).file);
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }

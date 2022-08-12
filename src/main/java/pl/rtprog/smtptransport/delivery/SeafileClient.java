@@ -216,9 +216,9 @@ class SeafileClient {
         return url;
     }
 
-    public boolean sendFile(String url, String path, Path file) throws URISyntaxException, IOException, InterruptedException {
+    public boolean sendFile(String url, String path, Path file, String filename) throws URISyntaxException, IOException, InterruptedException {
         var info=new HashMap<String, Object>();
-        info.put("file", file);
+        info.put("file", new MultipartContent.FileInfo(file, filename));
         info.put("parent_dir", path);
 //        info.put("relative_path", path);
         info.put("replace", "0");
