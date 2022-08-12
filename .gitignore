@@ -1,4 +1,6 @@
 *.class
+/out/
+/build/
 
 # Eclipse files
 .project

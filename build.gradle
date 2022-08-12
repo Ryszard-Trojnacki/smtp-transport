@@ -30,3 +30,7 @@ group = 'pl.rtprog'
 version = '0.0.3-SNAPSHOT'
 description = 'smtp-transport'
 java.sourceCompatibility = 11
+application {
+    mainClass = 'pl.rtprog.smtptransport.Main'
+    executableDir = ''
+}

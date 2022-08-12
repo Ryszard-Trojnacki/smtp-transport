@@ -31,14 +31,13 @@ seafile:
 
 ## Build & run
 To build application just get a copy from GIT.
-Install Java JDK 8 and Maven and run
+Install Java JDK 11 and run
 ```bash
-./gradlew dist
+./gradlew distTar
 ```
-in **target** directory there will be:
-* **smtp-transport.jar** - main jar with code
-* **libs/** - folder with dependencies
-copy this to runtime directory. Create configuration **smtp-transport.xml** and start application with Java JRE 8:
+in `build/distrubutions` directory there will be generated archive with application.
+Copy this archive to installation directory, unpack it and start with `smtp-transport` script.
 ```bash
-cd path_to_app && java -jar smtp-transport.jar &
+cd path_to_app && ./smtp-transport &
 ```
+
