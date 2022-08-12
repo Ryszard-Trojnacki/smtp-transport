@@ -3,6 +3,8 @@ package pl.rtprog.smtptransport.config;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
+
 /**
  * Configuration loading tests.
  * 
@@ -10,8 +12,8 @@ import org.junit.Test;
  */
 public class ConfigurationTests extends Assert {
 	@Test
-	public void loadSimpleConfiguration() {
-		Configuration c=Configuration.load(ConfigurationTests.class.getResourceAsStream("/config1.xml"));
+	public void loadSimpleConfiguration() throws IOException {
+		var c=Configuration.load(ConfigurationTests.class.getResourceAsStream("/config1.yaml")).getSmtp();
 		assertNotNull(c);
 		assertEquals("host1", c.getServer());
 		assertNotNull(c.getPort());
@@ -20,8 +22,8 @@ public class ConfigurationTests extends Assert {
 	}
 	
 	@Test
-	public void defaultConfigurationTest() {
-		Configuration c=Configuration.load(ConfigurationTests.class.getResourceAsStream("/config2.xml"));
+	public void defaultConfigurationTest() throws IOException {
+		var c=Configuration.load(ConfigurationTests.class.getResourceAsStream("/config2.yaml")).getSmtp();
 		assertNotNull(c);
 		assertEquals("host2", c.getServer());
 		assertEquals(SMTPEncryptionMode.NORMAL, c.getMode());

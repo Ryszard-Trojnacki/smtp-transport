@@ -1,6 +1,7 @@
 package pl.rtprog.smtptransport.core;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,17 +27,23 @@ public class ConfigurationService {
 			log.error("Missing configuration file '{}'!", conf.getName());
 			throw new IllegalStateException("Missing configuration file");
 		}
-		synchronized(lock) {
-			if(last==null) {
-				log.debug("Loading configuration from file: {}",conf.getAbsolutePath());
-				last=Configuration.load(conf);
-				modifyTime =conf.lastModified();
-			} else if(conf.lastModified()!= modifyTime) {
-				log.debug("Reloading configuration from file: {}",conf.getAbsolutePath());
-				last=Configuration.load(conf);	// reloading
-				modifyTime =conf.lastModified();
+		try {
+			synchronized (lock) {
+				if (last == null) {
+					log.debug("Loading configuration from file: {}", conf.getAbsolutePath());
+					last = Configuration.load(conf);
+					modifyTime = conf.lastModified();
+				} else if (conf.lastModified() != modifyTime) {
+					log.debug("Reloading configuration from file: {}", conf.getAbsolutePath());
+					last = Configuration.load(conf);    // reloading
+					modifyTime = conf.lastModified();
+				}
+				return last;
 			}
-			return last; 
+		}catch (IOException e) {
+			log.warn("Exception while trying to load configuration!", e);
+			if(last!=null) return last;
+			throw new RuntimeException(e);
 		}
 	}
 }

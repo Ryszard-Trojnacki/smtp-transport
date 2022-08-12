@@ -21,13 +21,8 @@
 		<appender-ref ref="file" />
 	</appender>
 
-	<logger name="org.apache.tapestry5"><level value="INFO" /></logger>
-	<logger name="org.apache.tapestry5.test.PageTester"><level value="WARN" /></logger>
-	<logger name="org.apache.tapestry5.ioc.RegistryBuilder"><level value="WARN" /></logger>
-	<logger name="org.apache.tapestry5.services.TapestryModule.ComponentClassResolver"><level value="WARN" /></logger>
-	<logger name="org.apache.tapestry5.TapestryFilter"><level value="WARN" /></logger>
-
 	<logger name="pl.rtprog.smtptransport"><level value="DEBUG" /></logger>
+	<logger name="jdk.internal.httpclient.debug"><level value="TRACE"/></logger>
 
 	<root>
 		<level value="info" />

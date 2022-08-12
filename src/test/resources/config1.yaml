@@ -1,0 +1,4 @@
+smtp:
+  host: host1
+  port: 25
+  mode: SSL

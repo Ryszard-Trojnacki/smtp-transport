@@ -1,5 +1,0 @@
-<configuration>
-	<smtpHost>host2</smtpHost>
-	<smtpUsername>ryszard.trojnacki</smtpUsername>
-	<smtpPassword>TopSecretPassword</smtpPassword>
-</configuration>

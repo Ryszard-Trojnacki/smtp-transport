@@ -1,0 +1,4 @@
+smtp:
+  host: host2
+  username: ryszard.trojnacki
+  password: TopSecretPassword

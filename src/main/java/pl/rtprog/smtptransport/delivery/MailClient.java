@@ -31,7 +31,8 @@ class MailClient {
 
     public SimpleEmail prepare() {
         var email = new SimpleEmail();
-        var cfg = cs.getConfiguration();
+        var cfg = cs.getConfiguration().getSmtp();
+        if(cfg==null) throw new IllegalStateException("Missing SMTP configuration");
 
         int port = cfg.getPort();
         email.setDebug(false);    // TODO: Parameter for testing purposes
@@ -57,7 +58,8 @@ class MailClient {
 
     public void transfer(MimeMessage m) throws IOException{
         var email = prepare();
-        var cfg = cs.getConfiguration();
+        var cfg = cs.getConfiguration().getSmtp();
+        if(cfg==null) throw new IllegalStateException("Missing SMTP configuration");
 
         // Set e-mail attributes from incoming message
         try {

@@ -3,7 +3,9 @@ package pl.rtprog.smtptransport.logic;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.rtprog.smtptransport.delivery.DeliveryService;
 
+import javax.inject.Inject;
 import javax.mail.*;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
@@ -26,6 +28,9 @@ public class LogicService {
 
     private final Path data=Path.of("data");
     private final AtomicInteger id=new AtomicInteger(0);
+
+    @Inject
+    private DeliveryService delivery;
 
     private static class QueueItem {
         private final long created;
@@ -103,22 +108,24 @@ public class LogicService {
 
     private void processItem(QueueItem item) throws IOException {
         if(item.parts.size()>1) {
+            var fn=data.resolve(id.incrementAndGet()+"f_"+item.name);
             log.debug("Merging items: {}", item);
             PDFMergerUtility merger=new PDFMergerUtility();
-            merger.setDestinationFileName(item.name);
-            for(var part: item.parts) {
-                merger.addSource(part.toFile());
-            }
+            merger.setDestinationFileName(fn.toString());
+            for(var part: item.parts) merger.addSource(part.toFile());
             merger.mergeDocuments(null);
+            for(var part: item.parts) Files.delete(part);
+            delivery.deliver(item.to, item.name, fn);
         } else if(item.parts.size()==1) {
             log.debug("Processing single page item: {}", item);
-            Files.move(item.parts.get(0), Path.of(item.name));
+            delivery.deliver(item.to, item.name, item.parts.get(0));
+//            Files.move(item.parts.get(0), Path.of(item.name));
         }
     }
 
     public void processPending() {
         var completed=new ArrayList<QueueItem>();
-        var limit=System.nanoTime()- TimeUnit.SECONDS.toNanos(30);
+        var limit=System.nanoTime()- TimeUnit.SECONDS.toNanos(45);
         cs.lock();
         try {
             var it=queue.values().iterator();

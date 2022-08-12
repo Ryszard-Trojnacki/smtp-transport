@@ -2,7 +2,6 @@ package pl.rtprog.smtptransport.delivery;
 
 import javax.mail.Address;
 import java.nio.file.Path;
-import java.util.List;
 
 /**
  * Interface for delivery services.
@@ -12,9 +11,9 @@ import java.util.List;
 public interface DeliveryService {
     /**
      * Method for deliver data.
-     * @param to recipients to deliver data to; probably {@link Address}.
-     * @param subject subject for data
+     * @param to recipient  to deliver data to.
+     * @param name file name
      * @param data data (PDF file).
      */
-    void deliver(List<Address> to, String subject, Path data);
+    void deliver(Address to, String name, Path data);
 }
