@@ -1,15 +1,21 @@
 package pl.rtprog.smtptransport.delivery;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.mail.EmailException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.rtprog.smtptransport.core.ConfigurationService;
 
+import javax.activation.FileDataSource;
 import javax.inject.Inject;
 import javax.mail.Address;
+import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 public class DeliveryServiceImpl implements DeliveryService {
@@ -57,15 +63,32 @@ public class DeliveryServiceImpl implements DeliveryService {
         return true;
     }
 
-    private boolean mailDelivery(Address to, String name, Path data) {
+    private boolean mailDelivery(Address to, String name, Path data) throws IOException, EmailException, MessagingException {
         var cfg=cs.getConfiguration().getSmtp();
         if(cfg==null) throw new IllegalStateException();
+        var addr=(InternetAddress)to;
         log.debug("Delivering over SMTP to {} file {}", to, name);
 
         var mailer=new MailClient();
+        var mail=mailer.prepare();
 
-        // TODO: Implement
-        return false;
+        MimeMultipart msg=new MimeMultipart();
+        var info=new MimeBodyPart();
+        info.setText("Scan "+name, StandardCharsets.UTF_8.name());
+        msg.addBodyPart(info);
+
+        var attachment=new MimeBodyPart();
+        attachment.setFileName(name);
+        attachment.setContent(new FileDataSource(data.toFile()), "application/pdf");
+        msg.addBodyPart(attachment);
+
+        mail.addTo(addr.getAddress());
+        mail.setSubject("Scan "+name);
+        mail.setContent(msg);
+
+        mailer.send(mail);
+
+        return true;
     }
 
     @Override

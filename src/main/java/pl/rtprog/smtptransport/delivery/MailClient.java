@@ -29,7 +29,7 @@ class MailClient {
     @Inject
     private JobService js;
 
-    public SimpleEmail prepare() {
+    public SimpleEmail prepare() throws EmailException {
         var email = new SimpleEmail();
         var cfg = cs.getConfiguration().getSmtp();
         if(cfg==null) throw new IllegalStateException("Missing SMTP configuration");
@@ -53,10 +53,21 @@ class MailClient {
                 email.setSSLOnConnect(true);
                 break;
         }
+        if (cfg.getFromEmail() != null) {
+            log.debug("Overriding from address");
+            if (cfg.getFromName() != null) {
+                email.setFrom(cfg.getFromEmail(), cfg.getFromName());
+            } else {
+                email.setFrom(cfg.getFromEmail());
+            }
+        }
+        email.setCharset("UTF-8");
+
+
         return email;
     }
 
-    public void transfer(MimeMessage m) throws IOException{
+    public void transfer(MimeMessage m) throws IOException, EmailException {
         var email = prepare();
         var cfg = cs.getConfiguration().getSmtp();
         if(cfg==null) throw new IllegalStateException("Missing SMTP configuration");
@@ -84,14 +95,7 @@ class MailClient {
                     else email.addBcc(ia.getAddress());
                 }
             }
-            if (cfg.getFromEmail() != null) {
-                log.debug("Overriding from address");
-                if (cfg.getFromName() != null) {
-                    email.setFrom(cfg.getFromEmail(), cfg.getFromName());
-                } else {
-                    email.setFrom(cfg.getFromEmail());
-                }
-            } else {
+            if (cfg.getFromEmail() == null) {
                 InternetAddress from = (InternetAddress) m.getFrom()[0];
                 if (from.getPersonal() != null) {
                     email.setFrom(from.getAddress(), from.getPersonal());
@@ -101,12 +105,14 @@ class MailClient {
             }
             email.setSubject(m.getSubject());
             email.setContent(m.getContent(), m.getContentType());
-            email.setCharset("UTF-8");
         } catch (MessagingException | EmailException e) {
             log.warn("Error while setting up email from received message", e);
             throw new IOException("Error processing message with error: " + e.getMessage(), e);
         }
+        send(email);
+    }
 
+    public void send(SimpleEmail email) throws IOException {
         try {
             if(js.isBackgroundMode()) {
                 log.debug("Sending message in background mode");
@@ -131,7 +137,5 @@ class MailClient {
             log.error("Error while sending email",e);
             throw new IOException("Error while transferring message to target host with message: "+e.getMessage());
         }
-
-
     }
 }
