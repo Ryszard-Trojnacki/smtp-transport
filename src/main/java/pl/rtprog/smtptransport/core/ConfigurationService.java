@@ -22,7 +22,7 @@ public class ConfigurationService {
 	private Configuration last=null;
 	
 	public Configuration getConfiguration() {
-		File conf=new File("smtp-transport.xml");
+		File conf=new File("smtp-transport.yaml");
 		if(!conf.exists()) {
 			log.error("Missing configuration file '{}'!", conf.getName());
 			throw new IllegalStateException("Missing configuration file");
