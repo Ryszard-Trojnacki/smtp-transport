@@ -47,7 +47,8 @@ public class DeliveryServiceImpl implements DeliveryService {
             log.warn("Missing repositories in Seafile account");
             return false;
         }
-        var target=repos.stream().filter(l -> addr.getAddress().equalsIgnoreCase(l.owner)).findFirst();
+        final var email=addr.getAddress();
+        var target=repos.stream().filter(l -> email.equalsIgnoreCase(l.owner) || email.equalsIgnoreCase(l.ownerContactEmail)).findFirst();
         if(target.isEmpty()) {
             log.info("Missing repository for user: {}", addr.getAddress());
             return false;
